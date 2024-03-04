@@ -3,25 +3,17 @@ from .models import Post
 from .forms import PostCreateForm
 from django.views.generic import CreateView, ListView
 from django.urls import reverse_lazy
-import requests
+from django.http import HttpResponseRedirect
 from bs4 import BeautifulSoup
 from .service import get_data_for_post
-
+from django.views.generic.edit import DeleteView
+from django.views import View
 
 
 class HomeView(ListView):
     model = Post
     template_name = "posts/home.html"
     context_object_name = "posts"
-
-
-def home_view(request):
-    posts = Post.objects.all()
-
-    context = {
-        'posts': posts
-    }
-    return render(request, 'posts/home.html', context=context)
 
 
 class PostCreateView(CreateView):
@@ -40,3 +32,15 @@ class PostCreateView(CreateView):
 
         post.save()
         return super().form_valid(form)
+
+
+def post_delete_view(request, pk):
+    post = Post.objects.get(id=pk)
+
+    if request.method == 'POST':
+        post.delete()
+        return redirect('home')
+    else:
+        return render(request,"posts/post_delete.html", context={'post': post})
+
+
