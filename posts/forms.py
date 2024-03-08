@@ -14,3 +14,16 @@ class PostCreateForm(forms.ModelForm):
                                           'rows': 2, 'cols': 20,
                                           'class': 'font1 text-4xl'}),
         }
+
+
+class PostEditForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ('body', )
+        labels = {
+            'body' : '',
+
+        }
+        widgets = {
+            'body' : forms.Textarea(attrs={'rows': 3, 'class': 'font1 text-4xl'}),
+        }
