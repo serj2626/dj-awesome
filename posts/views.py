@@ -1,5 +1,5 @@
 from django.shortcuts import redirect, render
-from .models import Post
+from .models import Post, Tag
 from .forms import PostCreateForm, PostEditForm
 from django.views.generic import CreateView, ListView
 from django.views.generic.detail import DetailView
@@ -39,15 +39,11 @@ class PostCreateView(SuccessMessageMixin, CreateView):
         return super().form_valid(form)
 
 
-def post_delete_view(request, pk):
-    post = Post.objects.get(id=pk)
-
-    if request.method == 'POST':
-        post.delete()
-        messages.success(request, 'Пост успешно удален')
-        return redirect('home')
-    else:
-        return render(request, "posts/post_delete.html", context={'post': post})
+class PostDelete(SuccessMessageMixin, DeleteView):
+    model = Post
+    template_name = "posts/post_delete.html"
+    success_url = reverse_lazy('home')
+    success_message = "Пост успешно удален"
 
 
 class PostEditView(SuccessMessageMixin, UpdateView):
@@ -66,3 +62,17 @@ class PostDetailView(DetailView):
 
 def page_not_found(request, exception):
     return render(request, '404.html')
+
+
+class CategoryView(ListView):
+    model = Post
+    template_name = "posts/home.html"
+    context_object_name = "posts"
+
+    def get_queryset(self):
+        return Post.objects.filter(tags__slug=self.kwargs.get('slug'))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["tag"] = Tag.objects.get(slug=self.kwargs.get('slug'))
+        return context

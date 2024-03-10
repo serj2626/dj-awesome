@@ -22,3 +22,7 @@ def get_data_for_post(post):
         'title': title,
         'artist': artist
     }
+
+
+def get_path_for_icon(instance, filename):
+    return f'icons/{instance.slug}/{filename}'

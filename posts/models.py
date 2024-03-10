@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 import uuid
+from .service import get_path_for_icon
 
 
 class Post(models.Model):
@@ -25,17 +26,17 @@ class Post(models.Model):
         return self.title
 
 
-
 class Tag(models.Model):
     name = models.CharField('название', max_length=50, unique=True)
-    slug= models.SlugField('слаг', max_length=50, unique=True)
-    
+    icon = models.FileField(
+        'иконка', upload_to=get_path_for_icon, null=True, blank=True)
+    order = models.IntegerField('порядок', null=True)
+    slug = models.SlugField('слаг', max_length=50, unique=True)
 
     class Meta:
         verbose_name = _("Tag")
         verbose_name_plural = _("Tags")
+        ordering = ['order']
 
     def __str__(self):
         return self.name
-
-

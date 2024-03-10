@@ -1,9 +1,19 @@
-{% extends 'layouts/a.html' %} {% block content %}
+{% extends 'layouts/a.html' %} 
+
+
+
+{% block content %}
 
 
 
 {% for post in posts %}
 
 {% include 'posts/post.html' %}
+
+{% empty %}
+{% include 'posts/empty.html' %}
+
 {% endfor %}
+
+
 {% endblock content %}
