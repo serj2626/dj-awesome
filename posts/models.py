@@ -12,6 +12,7 @@ class Post(models.Model):
     url = models.URLField('ссылка фликер', max_length=500, null=True)
     image = models.URLField('ссылка на картинку', max_length=500)
     body = models.TextField('текст поста', blank=True)
+    tags = models.ManyToManyField('Tag')
     created = models.DateTimeField('дата создания', auto_now_add=True)
     updated = models.DateTimeField('дата обновления', auto_now=True)
 
@@ -23,5 +24,18 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
-    # def get_absolute_url(self):
-    #     return reverse("Post_detail", kwargs={"pk": self.pk})
+
+
+class Tag(models.Model):
+    name = models.CharField('название', max_length=50, unique=True)
+    slug= models.SlugField('слаг', max_length=50, unique=True)
+    
+
+    class Meta:
+        verbose_name = _("Tag")
+        verbose_name_plural = _("Tags")
+
+    def __str__(self):
+        return self.name
+
+

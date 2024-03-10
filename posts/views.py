@@ -2,6 +2,7 @@ from django.shortcuts import redirect, render
 from .models import Post
 from .forms import PostCreateForm, PostEditForm
 from django.views.generic import CreateView, ListView
+from django.views.generic.detail import DetailView
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 from bs4 import BeautifulSoup
@@ -10,6 +11,7 @@ from django.views.generic.edit import DeleteView, UpdateView
 from django.views import View
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class HomeView(ListView):
@@ -55,3 +57,12 @@ class PostEditView(SuccessMessageMixin, UpdateView):
     success_url = reverse_lazy('home')
     success_message = "Пост успешно отредактирован"
     context_object_name = 'post'
+
+
+class PostDetailView(DetailView):
+    model = Post
+    template_name = "posts/post_detail.html"
+
+
+def page_not_found(request, exception):
+    return render(request, '404.html')
