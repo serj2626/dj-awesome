@@ -27,6 +27,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
 
+    'django_extensions',
+    'django_cleanup.apps.CleanupConfig',
     'crispy_forms',
     'crispy_bootstrap5',
     'allauth',
@@ -145,9 +147,10 @@ EMAIL_ADMIN = EMAIL_HOST_USER
 
 
 # ALLAUTH SETTINGS
-
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
+# Запрещенные имена пользователей
+ACCOUNT_USERNAME_BLACKLIST = ['admin', 'account', 'category']
 
 
 # CRISPY FORMS SETTINGS

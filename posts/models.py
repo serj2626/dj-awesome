@@ -3,6 +3,9 @@ from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 import uuid
 from .service import get_path_for_icon
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class Post(models.Model):
@@ -12,6 +15,8 @@ class Post(models.Model):
     artist = models.CharField('имя исполнителя', max_length=500, null=True)
     url = models.URLField('ссылка фликер', max_length=500, null=True)
     image = models.URLField('ссылка на картинку', max_length=500)
+    author = models.ForeignKey(
+        User, on_delete=models.SET_NULL, related_name='posts', null=True)
     body = models.TextField('текст поста', blank=True)
     tags = models.ManyToManyField('Tag')
     created = models.DateTimeField('дата создания', auto_now_add=True)
@@ -24,6 +29,13 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+
+    property
+
+    # def default_name(self):
+    #     if not self.author:
+    #         return {'name': 'Аноним',
+    #                 'username': 'user'}
 
 
 class Tag(models.Model):

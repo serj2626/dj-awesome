@@ -30,7 +30,7 @@ class PostCreateView(SuccessMessageMixin, CreateView):
     def form_valid(self, form):
         post = form.save(commit=False)
         result = get_data_for_post(post)
-
+        post.author = self.request.user
         post.image = result['image']
         post.title = result['title']
         post.artist = result['artist']
