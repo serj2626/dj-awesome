@@ -16,6 +16,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('', include('posts.urls')),
+    path('profile/', include('users.urls')),
 #     path('', HomeView.as_view(), name='home'),
 #     path('post/create/', PostCreateView.as_view(), name='post_create'),
 #     path('post/delete/<pk>/', PostDelete.as_view(), name='post_delete'),

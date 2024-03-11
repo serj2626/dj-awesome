@@ -8,7 +8,6 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = True
@@ -28,7 +27,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
 
-
+    'crispy_forms',
+    'crispy_bootstrap5',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -38,6 +38,7 @@ INSTALLED_APPS = [
 
 
     'posts.apps.PostsConfig',
+    'users.apps.UsersConfig',
 ]
 
 SITE_ID = 1
@@ -82,15 +83,12 @@ AUTHENTICATION_BACKENDS = (
 WSGI_APPLICATION = 'core.wsgi.application'
 
 
-
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -109,7 +107,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-
 LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'Europe/Moscow'
@@ -118,7 +115,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-
+# STATIC AND MEDIA SETTINGS
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
@@ -126,26 +123,33 @@ MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
-
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+# REDIRECT
 LOGIN_URL = 'account_login'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 
+# EMAIL SETTINGS
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
-
-
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-
-
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SERVER_EMAIL = EMAIL_HOST_USER
 EMAIL_ADMIN = EMAIL_HOST_USER
+
+
+# ALLAUTH SETTINGS
+
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+
+
+# CRISPY FORMS SETTINGS
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
