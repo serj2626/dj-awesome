@@ -15,10 +15,11 @@
   </figure>
   <div class="p-4 pb-2">
 
-    
+
 
     <a class="flex items-center gap-1 mb-4" href="{% url 'profile'%}">
-      <img class="w-8 h-8 object-cover rounded-full" src="{{ post.author.profile.avatar.url | default:'static/img/profile.png' }}" />
+      <img class="w-8 h-8 object-cover rounded-full"
+        src="{{ post.author.profile.avatar.url | default:'static/img/profile.png' }}" />
       <span class="font-bold hover:underline">{{ post.author.profile.name | default:'Нет автора' }}</span>
       <span class="text-sm text-gray-400">@{{ post.author.username | default:'anonymous' }}</span>
     </a>
@@ -35,7 +36,7 @@
     <div class="flex items-center justify-between text-sm px-2">
       <a class="font-bold hover:underline" href="">
         Комментарии
-        <span class="font-light text-gray-500 ml-1">3</span>
+        <span class="font-light text-gray-500 ml-1">{{ post.comments.count|default:'0' }}</span>
       </a>
       <div class="flex items-center gap-4 [&>a:hover]:underline">
         <div class="flex items-center gap-1">
@@ -43,8 +44,13 @@
           1
         </div>
         <a href="">Лайки</a>
+
+        {% if request.user == post.author %}
         <a href="{% url 'post_edit' post.id %}">Редактировать</a>
         <a href="{% url 'post_delete'  post.id %}">Удалить</a>
+        {% endif %}
+
+
       </div>
     </div>
   </div>

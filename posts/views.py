@@ -1,6 +1,8 @@
+from django.db.models.base import Model as Model
+from django.db.models.query import QuerySet
 from django.shortcuts import redirect, render
-from .models import Post, Tag
-from .forms import PostCreateForm, PostEditForm
+from .models import Post, Reply, Tag, Comment
+from .forms import PostCreateForm, PostEditForm, CommentCreateForm, ReplyCreateForm
 from django.views.generic import CreateView, ListView
 from django.views.generic.detail import DetailView
 from django.urls import reverse_lazy
@@ -20,8 +22,7 @@ class HomeView(ListView):
     context_object_name = "posts"
 
 
-class PostCreateView(SuccessMessageMixin, CreateView):
-    model = Post
+class PostCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     form_class = PostCreateForm
     template_name = "posts/post_create.html"
     success_message = "Пост успешно создан"
@@ -34,19 +35,18 @@ class PostCreateView(SuccessMessageMixin, CreateView):
         post.image = result['image']
         post.title = result['title']
         post.artist = result['artist']
-
         post.save()
         return super().form_valid(form)
 
 
-class PostDelete(SuccessMessageMixin, DeleteView):
+class PostDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Post
     template_name = "posts/post_delete.html"
     success_url = reverse_lazy('home')
     success_message = "Пост успешно удален"
 
 
-class PostEditView(SuccessMessageMixin, UpdateView):
+class PostEditView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Post
     form_class = PostEditForm
     template_name = "posts/post_edit.html"
@@ -55,9 +55,26 @@ class PostEditView(SuccessMessageMixin, UpdateView):
     context_object_name = 'post'
 
 
-class PostDetailView(DetailView):
+class PostDetailView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Post
+    form_class = CommentCreateForm
+    success_message = "Комментарий успешно опубликован"
     template_name = "posts/post_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["post"] = self.get_object()
+        context['replyform'] = ReplyCreateForm()
+        return context
+
+    def form_valid(self, form):
+        form.instance.post = self.get_object()
+        form.instance.author = self.request.user
+        form.save()
+        return super().form_valid(form)
+
+    def get_success_url(self) -> str:
+        return reverse_lazy('post_detail', kwargs={'pk': self.get_object().id})
 
 
 def page_not_found(request, exception):
@@ -76,3 +93,29 @@ class CategoryView(ListView):
         context = super().get_context_data(**kwargs)
         context["tag"] = Tag.objects.get(slug=self.kwargs.get('slug'))
         return context
+
+
+def comment_delete(request, pk):
+    comment = Comment.objects.get(pk=pk)
+    comment.delete()
+    messages.success(request, ' Комментарий успешно удален')
+    return redirect('post_detail', pk=comment.post.pk)
+
+
+def reply_sent(request, pk):
+    comment = Comment.objects.get(pk=pk)
+    if request.method == 'POST':
+        replyform = ReplyCreateForm(request.POST)
+        if replyform.is_valid():
+            reply = replyform.save(commit=False)
+            reply.author = request.user
+            reply.parent_comment = comment
+            reply.save()
+            messages.success(request, ' Ответ успешно опубликован')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+def reply_delete(request, pk):
+    reply = Reply.objects.get(pk=pk)
+    reply.delete()
+    messages.success(request, ' Ответ успешно удален')
+    return redirect('post_detail', pk=reply.parent_comment.post.pk)

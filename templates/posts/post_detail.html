@@ -1,35 +1,38 @@
 {% extends 'layouts/a.html' %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 
 {% include 'posts/post.html' %}
 
 {% if user.is_authenticated %}
-<div class="card !pb-0 -mt-3">
-    <form class="flex items-center p-4" autocomplete="off"
-    hx-post="{% url 'comment-sent' post.id %}" 
-    hx-target="#tab-contents" 
-    hx-swap="afterbegin"
-    _="on htmx:afterRequest reset() me" >
+<div class="card !pb-0 -mt-3 ">
+    <form method="POST" class="flex items-center p-4 " autocomplete="off" hx-post="" hx-target="#tab-contents"
+        hx-swap="afterbegin" _="on htmx:afterRequest reset() me">
         {% csrf_token %}
-        {{ commentform }}
-        <button @click="open = false" class="block ml-2" type="submit">Submit</button>
+        {{ form|crispy }}
+        <button @click="open = false" class="block ml-2" type="submit">Опубликовать</button>
     </form>
+
 </div>
 {% endif %}
 
 <div class="mb-20">
-    <div id="tabs" class="ml-4 flex gap-1 mb-4 {% if not post.comments.count %}hidden{% endif %}" hx-target="#tab-contents" hx-swap="innerHTML"
-    _="on htmx:afterOnLoad take .selected for event.target">
-        <a hx-get="" class="tab selected">Newest First</a> 
-        <a hx-get="" class="tab">Top Comments</a>
+    <div id="tabs" class="ml-4 flex gap-1 mb-4 {% if not post.comments.count %}hidden{% endif %}"
+        hx-target="#tab-contents" hx-swap="innerHTML" _="on htmx:afterOnLoad take .selected for event.target">
+        <a hx-get="" class="tab selected">Новинки</a>
+        <a hx-get="" class="tab">Лучшие комментарии</a>
     </div>
 
-    <!-- <div id="tab-contents">
+    <div id="tab-contents">
         {% for comment in post.comments.all %}
-        {% include 'a_posts/comment.html' %}
+            {% include 'posts/comment.html' %}
+        {% empty %}
+        <div class="card p-2 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2  ">
+            <div class="w-full text-center mt-10">Нет комментариев</div>
+        </div>
         {% endfor %}
-    </div> -->
+    </div>
 </div>
 
 {% endblock %}

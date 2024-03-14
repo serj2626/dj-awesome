@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post, Tag
+from .models import Post, Tag, Comment, Reply
 
 
 @admin.register(Post)
@@ -20,3 +20,17 @@ class TagAdmin(admin.ModelAdmin):
 
     list_display = ('name', 'slug')
     prepopulated_fields = {'slug': ('name',)}
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    '''Admin View for Comment)'''
+
+    list_display = ('author', 'post', )
+
+
+@admin.register(Reply)
+class ReplyAdmin(admin.ModelAdmin):
+    '''Admin View for Reply)'''
+
+    list_display = ('author', 'parent_comment', 'created')
