@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post, Tag, Comment, Reply
+from .models import Post, Tag, Comment, Reply, LikedPost
 
 
 @admin.register(Post)
@@ -34,3 +34,10 @@ class ReplyAdmin(admin.ModelAdmin):
     '''Admin View for Reply)'''
 
     list_display = ('author', 'parent_comment', 'created')
+
+
+@admin.register(LikedPost)
+class LikedPostAdmin(admin.ModelAdmin):
+    '''Admin View for LikedPost)'''
+
+    list_display = ('post', 'user', 'created', )

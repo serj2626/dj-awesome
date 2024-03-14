@@ -18,6 +18,7 @@ class Post(models.Model):
     author = models.ForeignKey(
         User, on_delete=models.SET_NULL, related_name='posts', null=True)
     body = models.TextField('текст поста', blank=True)
+    likes = models.ManyToManyField(User, related_name='likedposts', blank=True, through='LikedPost')
     tags = models.ManyToManyField('Tag')
     created = models.DateTimeField('дата создания', auto_now_add=True)
     updated = models.DateTimeField('дата обновления', auto_now=True)
@@ -29,7 +30,15 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
-
+    
+    
+class LikedPost(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f'{self.user.username} : {self.post.title}'
 
 class Tag(models.Model):
     name = models.CharField('название', max_length=50, unique=True)
