@@ -39,11 +39,8 @@
         <span class="font-light text-gray-500 ml-1">{{ post.comments.count|default:'0' }}</span>
       </a>
       <div class="flex items-center gap-4 [&>a:hover]:underline">
-        <div class="flex items-center gap-1">
-          <img class="w-5 -mt-1" src="https://img.icons8.com/small/24/000000/fire-heart.png" />
-          {{ post.likes.count|default:'0' }}
-        </div>
-        <a href="">Лайки</a>
+
+        {% include 'snippets/likes.html' %}
 
         {% if request.user == post.author %}
         <a href="{% url 'post_edit' post.id %}">Редактировать</a>

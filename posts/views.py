@@ -6,7 +6,7 @@ from .forms import PostCreateForm, PostEditForm, CommentCreateForm, ReplyCreateF
 from django.views.generic import CreateView, ListView
 from django.views.generic.detail import DetailView
 from django.urls import reverse_lazy
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from bs4 import BeautifulSoup
 from .service import get_data_for_post
 from django.views.generic.edit import DeleteView, UpdateView
@@ -114,8 +114,19 @@ def reply_sent(request, pk):
             messages.success(request, ' Ответ успешно опубликован')
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
+
 def reply_delete(request, pk):
     reply = Reply.objects.get(pk=pk)
     reply.delete()
     messages.success(request, ' Ответ успешно удален')
     return redirect('post_detail', pk=reply.parent_comment.post.pk)
+
+
+def like_post_view(request, pk):
+    post = Post.objects.get(pk=pk)
+    if request.user != post.author:
+        if request.user not in post.likes.all():
+            post.likes.add(request.user)
+        else:
+            post.likes.remove(request.user)
+    return render(request, 'snippets/likes.html', {'post': post})
