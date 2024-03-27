@@ -26,3 +26,12 @@ def get_data_for_post(post):
 
 def get_path_for_icon(instance, filename):
     return f'icons/{instance.slug}/{filename}'
+
+
+
+def get_add_like(request, obj):
+    if request.user != obj.author:
+        if request.user not in obj.likes.all():
+            obj.likes.add(request.user)
+        else:
+            obj.likes.remove(request.user)

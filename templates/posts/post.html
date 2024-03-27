@@ -34,7 +34,7 @@
       {% endfor %}
     </div>
     <div class="flex items-center justify-between text-sm px-2">
-      <a class="font-bold hover:underline" href="">
+      <a class="font-bold hover:underline" href="{% url 'post_detail' post.id %}">
         Комментарии
         <span class="font-light text-gray-500 ml-1">{{ post.comments.count|default:'0' }}</span>
       </a>

@@ -8,7 +8,7 @@ from django.views.generic.detail import DetailView
 from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect
 from bs4 import BeautifulSoup
-from .service import get_data_for_post
+from .service import get_data_for_post, get_add_like
 from django.views.generic.edit import DeleteView, UpdateView
 from django.views import View
 from django.contrib import messages
@@ -122,11 +122,15 @@ def reply_delete(request, pk):
     return redirect('post_detail', pk=reply.parent_comment.post.pk)
 
 
-def like_post_view(request, pk):
-    post = Post.objects.get(pk=pk)
-    if request.user != post.author:
-        if request.user not in post.likes.all():
-            post.likes.add(request.user)
-        else:
-            post.likes.remove(request.user)
-    return render(request, 'snippets/likes.html', {'post': post})
+class AddLikePostView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        post = Post.objects.get(pk=pk)
+        get_add_like(request, post)
+        return render(request, 'snippets/likes.html', {'post': post})
+
+
+class AddLikeCommentView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        comment = Comment.objects.get(pk=pk)
+        get_add_like(request, comment)
+        return render(request, 'snippets/likes_comment.html', {'comment': comment})

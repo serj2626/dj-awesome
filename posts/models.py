@@ -18,7 +18,8 @@ class Post(models.Model):
     author = models.ForeignKey(
         User, on_delete=models.SET_NULL, related_name='posts', null=True)
     body = models.TextField('текст поста', blank=True)
-    likes = models.ManyToManyField(User, related_name='likedposts', blank=True, through='LikedPost')
+    likes = models.ManyToManyField(
+        User, related_name='likedposts', blank=True, through='LikedPost')
     tags = models.ManyToManyField('Tag')
     created = models.DateTimeField('дата создания', auto_now_add=True)
     updated = models.DateTimeField('дата обновления', auto_now=True)
@@ -30,15 +31,16 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
-    
-    
+
+
 class LikedPost(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
-    
+
     def __str__(self):
         return f'{self.user.username} : {self.post.title}'
+
 
 class Tag(models.Model):
     name = models.CharField('название', max_length=50, unique=True)
@@ -58,32 +60,46 @@ class Tag(models.Model):
 
 class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='comments')
+    author = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name='comments')
     post = models.ForeignKey(
         Post, on_delete=models.CASCADE, related_name='comments')
     body = models.CharField('текст', max_length=500)
+    likes = models.ManyToManyField(
+        User, related_name='likedcomments', through='LikedComment')
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-
 
     class Meta:
         ordering = ['created']
 
     def __str__(self):
         return f'Комментарий к посту {self.post} от {self.author}'
-    
+
     def save(self, *args, **kwargs):
         if not self.author:
             self.author = 'Пользователь удален'
         return super().save(*args, **kwargs)
 
 
+class LikedComment(models.Model):
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.user.username} : {self.comment.body}[:30]... '
+
+
 class Reply(models.Model):
-    id = models.CharField(max_length=100, default=uuid.uuid4, unique=True, primary_key = True, editable=False)
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="replies")
-    parent_comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="replies")
+    id = models.CharField(max_length=100, default=uuid.uuid4,
+                          unique=True, primary_key=True, editable=False)
+    author = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="replies")
+    parent_comment = models.ForeignKey(
+        Comment, on_delete=models.CASCADE, related_name="replies")
     body = models.CharField(max_length=150)
-    # likes = models.ManyToManyField(User, related_name='likedreplies', through='LikedReply')
+    likes = models.ManyToManyField(User, related_name='likedreplies', through='LikedReply')
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -94,3 +110,12 @@ class Reply(models.Model):
 
     class Meta:
         ordering = ['created']
+
+
+class LikedReply(models.Model):
+    reply = models.ForeignKey(Reply, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.user.username} : {self.reply.body[:30]}'

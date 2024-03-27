@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (
     PostCreateView, HomeView, PostDelete,
     PostEditView, PostDetailView, CategoryView, 
-    comment_delete, reply_sent, reply_delete, like_post_view
+    comment_delete, reply_sent, reply_delete, AddLikePostView,AddLikeCommentView
 )
 
 
@@ -13,7 +13,8 @@ urlpatterns = [
     path('post/delete/<pk>/', PostDelete.as_view(), name='post_delete'),
     path('post/edit/<pk>/', PostEditView.as_view(), name='post_edit'),
     path('post/<pk>/', PostDetailView.as_view(), name='post_detail'),
-    path('post/<pk>/add/like', like_post_view, name='add_like_post'),
+    path('post/<pk>/add/like', AddLikePostView.as_view(), name='add_like_post'),
+    path('comment/like/<pk>', AddLikeCommentView.as_view(), name='comment_like_'),
     path('category/<slug:slug>/', CategoryView.as_view(), name='category'),
     path('comment/<pk>/delete/', comment_delete, name='comment_delete'),
     path('reply-sent/<pk>/', reply_sent, name='reply_sent'),
