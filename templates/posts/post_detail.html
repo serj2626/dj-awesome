@@ -6,14 +6,16 @@
 {% include 'posts/post.html' %}
 
 {% if user.is_authenticated %}
-<div class="card !pb-0 -mt-3 ">
-    <form method="POST" class="flex items-center p-4 " autocomplete="off" hx-post="" hx-target="#tab-contents"
-        hx-swap="afterbegin" _="on htmx:afterRequest reset() me">
+<div class="card !pb-0 -mt-3">
+    <form class="flex items-center p-4" autocomplete="off"
+    hx-post="{% url 'comment_create' post.id %}" 
+    hx-target="#tab-contents" 
+    hx-swap="afterbegin"
+    _="on htmx:afterRequest reset() me" >
         {% csrf_token %}
-        {{ form|crispy }}
-        <button @click="open = false" class="block ml-2" type="submit">Опубликовать</button>
+        {{ commentform }}
+        <button @click="open = false" class="block ml-2" type="submit">Отправить</button>
     </form>
-
 </div>
 {% endif %}
 

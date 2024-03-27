@@ -55,26 +55,28 @@ class PostEditView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     context_object_name = 'post'
 
 
-class PostDetailView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class PostDetailView(LoginRequiredMixin, SuccessMessageMixin, DetailView):
     model = Post
-    form_class = CommentCreateForm
-    success_message = "Комментарий успешно опубликован"
     template_name = "posts/post_detail.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["post"] = self.get_object()
         context['replyform'] = ReplyCreateForm()
+        context['commentform'] = CommentCreateForm()
         return context
 
-    def form_valid(self, form):
-        form.instance.post = self.get_object()
-        form.instance.author = self.request.user
-        form.save()
-        return super().form_valid(form)
 
-    def get_success_url(self) -> str:
-        return reverse_lazy('post_detail', kwargs={'pk': self.get_object().id})
+class CommentCreatewView(LoginRequiredMixin,  View):
+    
+    def post(self, request, pk):
+        comment = CommentCreateForm(request.POST)
+        if comment.is_valid():
+            comment = comment.save(commit=False)
+            comment.author = request.user
+            comment.post = Post.objects.get(pk=pk)
+            comment.save()
+            return render(request, 'posts/comment.html', {'comment': comment})
 
 
 def page_not_found(request, exception):
@@ -134,3 +136,10 @@ class AddLikeCommentView(LoginRequiredMixin, View):
         comment = Comment.objects.get(pk=pk)
         get_add_like(request, comment)
         return render(request, 'snippets/likes_comment.html', {'comment': comment})
+
+
+class AddLikeReplyView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        reply = Reply.objects.get(pk=pk)
+        get_add_like(request, reply)
+        return render(request, 'snippets/likes_reply.html', {'reply': reply})

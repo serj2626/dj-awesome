@@ -15,13 +15,13 @@
                 <span class="text-sm text-gray-400">@{{ reply.author.username }}</span>
             </a>
             {% else %}
-            <span class="text-gray-500">no author</span>
+            <span class="text-gray-500">Нет автора</span>
             {% endif %}
             <div class="mr-3">{{ reply.body }}</div>
         </div>
     </div>
     <div class="flex items-center gap-4 [&>a:hover]:underline">
-
+        {% include 'snippets/likes_reply.html' %}
         {% if user.is_authenticated and reply.author == user %}
         <a href="{% url 'reply_delete' reply.id %}">Удалить</a>
         {% endif %}
